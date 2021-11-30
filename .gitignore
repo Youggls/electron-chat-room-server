@@ -130,3 +130,5 @@ dmypy.json
 
 # Pycharm project folder
 .idea/
+
+.log/
