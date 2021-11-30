@@ -1,0 +1,10 @@
+[2021-11-30 22:03:20][INFO]: Welcome to UDP chat server!
+[2021-11-30 22:03:20][INFO]: Hello, It is my server!
+[2021-11-30 22:03:21][INFO]: Begin to save log.
+[2021-11-30 22:04:08][INFO]: Welcome to UDP chat server!
+[2021-11-30 22:04:08][INFO]: Hello, It is my server!
+[2021-11-30 22:04:09][INFO]: Begin to save log.
+[2021-11-30 22:04:09][INFO]: Log has been saved!.
+[2021-11-30 22:04:10][INFO]: Hello, It is my server2!
+[2021-11-30 22:04:10][INFO]: Hello, It is my server3!
+[2021-11-30 22:04:12][INFO]: Begin to save log.

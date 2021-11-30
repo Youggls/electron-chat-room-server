@@ -1,0 +1,2 @@
+LOG_FILE_PATH = './log/log.txt'
+LOG2FILE_INTERVAL = 1
