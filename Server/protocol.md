@@ -76,19 +76,19 @@ possible value for `chat type`: `PERSONAL`, `PUBLIC`
 
 > A send a message to B, server reply A.
 
-`**@@~~REPLYMSG\r\n{isSuccess}\r\n{errMsg}`
+`**@@~~REPLYMSG\r\n{receiver name}\r\n{isSuccess}\r\n{errMsg}`
 
 - possible value for `isSuccess`: `TRUE`, `FALSE`
 
 - possible value for `errMsg`: `Send successfully`, `Receiver offline`, `Unknown error`
 
-- example1: A send message to B, success
+- example1: A send message to Bob, success
 
-`**@@~~REPLYMSG\r\nTRUE\r\nSend successfully`
+`**@@~~REPLYMSG\r\nBob\r\nTRUE\r\nSend successfully`
 
-- example2: A send message to B, failed because of B offline
+- example2: A send message to Bob, failed because of B offline
 
-`**@@~~REPLYMSG\r\nFALSE\r\nReceiver offline`
+`**@@~~REPLYMSG\r\nBob\r\nFALSE\r\nReceiver offline`
 
 ### Reply check status
 

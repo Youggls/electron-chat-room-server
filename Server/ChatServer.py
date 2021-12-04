@@ -90,6 +90,7 @@ class ChatServer(Thread):
         else:
             target_msg += PERSONAL + CRLF
         target_msg += message
+        reply_msg += receiver_name + CRLF
 
         if receiver_name == ALL:
             # If send to all user, send to each one.
