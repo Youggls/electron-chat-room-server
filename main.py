@@ -4,11 +4,10 @@ from Server.ChatServer import ChatServer
 from Logger.Logger import Logger
 
 if __name__ == '__main__':
-    Logger.get_logger().info('Welcome to UDP chat server!')
-    server = ChatServer()
-    Logger.get_logger().info('Hello, It is my server!')
-    time.sleep(2)
-    Logger.get_logger().info('Hello, It is my server2!')
-    Logger.get_logger().info('Hello, It is my server3!')
-    time.sleep(2)
-    Logger.get_logger().close()
+    try:
+        cs = ChatServer()
+        cs.start()
+        cs.join()
+    except Exception as e:
+        Logger.get_logger().error(str(e))
+        Logger.get_logger().close()

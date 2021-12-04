@@ -9,7 +9,8 @@ class Logger:
     def __init__(self, log_file_path, log2file_interval=5) -> None:
         self.__info_list_mutex = Lock()
         self.__info_list = []
-        self.__log_file = open(log_file_path, mode='a+')
+        self.__log_file_path = log_file_path
+        self.__log_file = open(self.__log_file_path, mode='a+')
         self.__log2file_interval = log2file_interval
         self.__timer = Timer(self.__log2file_interval, self.__save2file_thread_worker)
         self.__timer.start()
@@ -45,13 +46,16 @@ class Logger:
         self.__info_list = []
         finish_info = f'[{self.__get_current_time}][INFO]: Log has been saved!.'
         print(finish_info)
-        self.__info_list.append(finish_info)
+        self.__log_file.write(finish_info + '\n')
+        self.__log_file.close()
+        self.__log_file = open(self.__log_file_path, mode='a+')
 
     def __save2file_thread_worker(self) -> None:
         self.__info_list_mutex.acquire()
         self.__save2file_without_mutex()
         self.__info_list_mutex.release()
         self.__timer = Timer(self.__log2file_interval, self.__save2file_thread_worker)
+        self.__timer.start()
 
     def close(self) -> None:
         self.__info_list_mutex.acquire()
