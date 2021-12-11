@@ -131,9 +131,11 @@ class ChatServer(Thread):
         self.client_lock.acquire()
         if user_name not in self.user_set:
             reply_msg = PROTOCOL_STRING + CHECK + CRLF + FALSE
+            Logger.get_logger().info(f'User {user_name} check failed: User does not exist.')
         else:
             # Update last connection time
             self.user_set[user_name][2] = time.time()
+            Logger.get_logger().info(f'User {user_name} check success.')
         self.client_lock.release()
         user_list_str = '\n'.join(self.user_set.keys())
         reply_msg = PROTOCOL_STRING + CHECK + CRLF + TRUE + CRLF + str(len(self.user_set.keys())) + CRLF + user_list_str
