@@ -33,18 +33,18 @@ class Logger:
 
     def __write_log(self, msg: str, log_type: str) -> None:
         self.__info_list_mutex.acquire()
-        self.__info_list.append(f'[{self.__get_current_time}][{log_type}]: {msg}')
+        self.__info_list.append(f'[{time.time()}] [{self.__get_current_time}][{log_type}]: {msg}')
         self.__info_list_mutex.release()
         print(self.__info_list[-1])
 
     def __save2file_without_mutex(self):
-        save_info = f'[{self.__get_current_time}][INFO]: Begin to save log.'
+        save_info = f'[{time.time()}] [{self.__get_current_time}][INFO]: Begin to save log.'
         print(save_info)
         self.__info_list.append(save_info)
         for line in self.__info_list:
             self.__log_file.write(line + '\n')
         self.__info_list = []
-        finish_info = f'[{self.__get_current_time}][INFO]: Log has been saved!.'
+        finish_info = f'[{time.time()}] [{self.__get_current_time}][INFO]: Log has been saved!.'
         print(finish_info)
         self.__log_file.write(finish_info + '\n')
         self.__log_file.close()

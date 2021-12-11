@@ -119,7 +119,7 @@ class ChatServer(Thread):
         reply_msg += TRUE + CRLF + SEND_SUCCESS
         return reply_msg
 
-    def __handle_check(self, para_list):
+    def __handle_check(self, para_list) -> str:
         """
         Handle check command
         Args:
@@ -127,24 +127,38 @@ class ChatServer(Thread):
 
         Returns: The message reply to sender.
         """
-        user_name = para_list[0]
-        # Update last connection time
+        user_name = para_list[0]    
         self.client_lock.acquire()
-        self.user_set[user_name][2] = time.time()
+        if user_name not in self.user_set:
+            reply_msg = PROTOCOL_STRING + CHECK + CRLF + FALSE
+        else:
+            # Update last connection time
+            self.user_set[user_name][2] = time.time()
         self.client_lock.release()
-        reply_msg = PROTOCOL_STRING + CHECK + CRLF
+        user_list_str = '\n'.join(self.user_set.keys())
+        reply_msg = PROTOCOL_STRING + CHECK + CRLF + TRUE + CRLF + str(len(self.user_set.keys())) + CRLF + user_list_str
 
-        # Get the current user number
-        reply_msg += str(len(self.user_set))
         return reply_msg
 
-    def handler(self, data, address):
+    @staticmethod
+    def __decode_raw_data(data) -> tuple:
+        """
+        Decode raw data
+        Args:
+            data: raw data
+
+        Returns: The command and parameter list of raw data.
+        """
         decoded = data.decode(ENCODING)
-        ip_address, port = address
         message_detail = decoded.strip(PROTOCOL_STRING)
         command_and_params = message_detail.split(CRLF)
         command = command_and_params[0]
         param_list = command_and_params[1:]
+        return command, param_list
+
+    def handler(self, data, address):
+        ip_address, port = address
+        command, param_list = ChatServer.__decode_raw_data(data)
         reply_msg = PROTOCOL_STRING
 
         if command == LOGIN:
@@ -152,6 +166,9 @@ class ChatServer(Thread):
 
         elif command == MESSAGE:
             reply_msg = self.__handle_message(param_list)
+
+        elif command == CHECK:
+            reply_msg = self.__handle_check(param_list)
 
         reply_socket = socket(AF_INET, SOCK_DGRAM)
         reply_socket.sendto(reply_msg.encode(ENCODING), (ip_address, port))
@@ -162,4 +179,3 @@ class ChatServer(Thread):
             data, client_address = self.socket.recvfrom(BUFFER_SIZE)
             handler_thread = Thread(target=self.handler, args=(data, client_address))
             handler_thread.start()
-            # self.handler(data, client_address)

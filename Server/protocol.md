@@ -94,9 +94,15 @@ possible value for `chat type`: `PERSONAL`, `PUBLIC`
 
 > Server reply server status
 
-`**@@~~CHECK\r\n{online people number}`
+`**@@~~CHECK\r\n{isSuccess}\r\n{online people number}\r\n{errMsg}\r\n{people1\npeople2\n...peoplen}`
 
 - possible value for `online people number`: integer
+
+- possible value for `isSuccess`: 'TRUE', 'FALSE'
+
+    If user list doesn't have current user name, return false, else return true
+
+- parameter 3: the current user list, seperated by \n
 
 - example: online people number is 123
 
