@@ -15,12 +15,16 @@ class ChatServer(Thread):
         # User list, each entry contains three item: ip address, port, last connection time
         self.user_set = {}
         self.port = PORT
+        # Build UDP socket
         self.socket = socket(AF_INET, SOCK_DGRAM)
-        self.socket.bind(('127.0.0.1', PORT))
-        Logger.get_logger().info(f'Server listen 127.0.0.1:{PORT}')
         self.client_lock = Lock()
+        # Timer: check if the user is alive every minute
         self.__timer = Timer(TIME_OUT, self.__check_alive)
+
+        self.socket.bind(('127.0.0.1', PORT))
         self.__timer.start()
+
+        Logger.get_logger().info(f'Server listen 127.0.0.1:{PORT}')
 
     def __check_alive(self) -> None:
         """
@@ -29,6 +33,7 @@ class ChatServer(Thread):
         """
         offline_list = []
         current_time = time.time()
+
         self.client_lock.acquire()
         for user in self.user_set:
             if current_time - self.user_set[user][2] > TIME_OUT:
@@ -37,16 +42,18 @@ class ChatServer(Thread):
             Logger.get_logger().info(f'User {offline} was kicked out! Reason: time out.')
             self.user_set.pop(offline)
         self.client_lock.release()
+
+        # New timer
         self.__timer = Timer(TIME_OUT, self.__check_alive)
         self.__timer.start()
 
-    def __handle_login(self, param_list, ip_address, port) -> str:
+    def __handle_login(self, param_list: list, ip_address: str, port: int) -> str:
         """
         Handle login command
         Args:
-            param_list: parameter list of raw data
-            ip_address: login user ip address
-            port: login user port
+            param_list (list): parameter list of raw data
+            ip_address (str): login user ip address
+            port (int): login user port
 
         Returns: The message reply to login user.
         """
@@ -65,16 +72,18 @@ class ChatServer(Thread):
         self.client_lock.release()
         return reply_msg
 
-    def __handle_message(self, param_list) -> str:
+    def __handle_message(self, param_list: list) -> str:
         """
         Handle message command
         Args:
-            param_list: the parameter list of raw data.
+            param_list (list): the parameter list of raw data.
 
         Returns: The message reply to sender.
         """
 
         # Build target msg and reply msg
+        # target_msg will be sent to message target user.
+        # reply_msg will be sent to sender, which is the message source user.
         target_msg = PROTOCOL_STRING + MESSAGE + CRLF
         reply_msg = PROTOCOL_STRING + REPLY_MSG + CRLF
         sender_name, receiver_name, message = param_list
@@ -119,11 +128,11 @@ class ChatServer(Thread):
         reply_msg += TRUE + CRLF + SEND_SUCCESS
         return reply_msg
 
-    def __handle_check(self, para_list) -> str:
+    def __handle_check(self, para_list: list) -> str:
         """
         Handle check command
         Args:
-            para_list: The parameter list of raw data
+            para_list (list): The parameter list of raw data
 
         Returns: The message reply to sender.
         """
@@ -143,24 +152,41 @@ class ChatServer(Thread):
         return reply_msg
 
     @staticmethod
-    def __decode_raw_data(data) -> tuple:
+    def __decode_raw_data(data: bytes) -> tuple:
         """
         Decode raw data
         Args:
-            data: raw data
+            data (bytes): raw data
 
-        Returns: The command and parameter list of raw data.
+        Returns: The command and parameter list of raw data, type is tuple: (command (str), param_list (list))
+                 If the raw data is invalid, return (None, None)
         """
         decoded = data.decode(ENCODING)
-        message_detail = decoded.strip(PROTOCOL_STRING)
-        command_and_params = message_detail.split(CRLF)
+        if not decoded.startswith(PROTOCOL_STRING):
+            # Error: protocol string is not match
+            return None, None
+        command_and_params = decoded.strip(PROTOCOL_STRING).split(CRLF)
+
         command = command_and_params[0]
         param_list = command_and_params[1:]
         return command, param_list
 
-    def handler(self, data, address):
+    def handler(self, data: bytes, address: str) -> None:
+        """handel the data received from client
+
+        Args:
+            data (bytes): The data received from client, encoded in utf-8
+            address (tuple): The address of client, type is tuple: (ip_address, port)
+        Returns: None
+        """
         ip_address, port = address
         command, param_list = ChatServer.__decode_raw_data(data)
+
+        if command is None or param_list is None:
+            # Error: protocol string is not match
+            Logger.get_logger().info(f'Error: protocol string is not match.')
+            return
+
         reply_msg = PROTOCOL_STRING
 
         if command == LOGIN:

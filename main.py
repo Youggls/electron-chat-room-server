@@ -1,5 +1,3 @@
-import time
-
 from Server.ChatServer import ChatServer
 from Logger.Logger import Logger
 
