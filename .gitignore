@@ -132,3 +132,7 @@ dmypy.json
 .idea/
 
 log/
+
+# VS Code configuration file
+
+.vscode/
