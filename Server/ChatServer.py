@@ -94,14 +94,14 @@ class ChatServer(Thread):
         self.user_set[sender_name][2] = time.time()
 
         # Send type
-        if receiver_name == ALL:
+        if receiver_name == PUBLIC:
             target_msg += PUBLIC + CRLF
         else:
             target_msg += PERSONAL + CRLF
         target_msg += message
         reply_msg += receiver_name + CRLF
 
-        if receiver_name == ALL:
+        if receiver_name == PUBLIC:
             # If send to all user, send to each one.
             Logger.get_logger().info(
                 f'User {sender_name} send message to ALL.'
@@ -172,7 +172,7 @@ class ChatServer(Thread):
         return command, param_list
 
     def handler(self, data: bytes, address: str) -> None:
-        """handel the data received from client
+        """handle the data received from client
 
         Args:
             data (bytes): The data received from client, encoded in utf-8

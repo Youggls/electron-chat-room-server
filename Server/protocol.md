@@ -28,7 +28,7 @@
 
 - example2: Bob send `I am Bob` to all people
 
-    `**@@~~MESSAGE\r\nBob\r\nALL\r\nI am Bob`
+    `**@@~~MESSAGE\r\nBob\r\nPUBLIC\r\nI am Bob`
 
 ### Check status
 

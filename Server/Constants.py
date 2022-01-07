@@ -12,7 +12,6 @@ REPLY_MSG = 'REPLYMSG'
 # Parameter values
 TRUE = 'TRUE'
 FALSE = 'FALSE'
-ALL = 'ALL'
 PERSONAL = 'PERSONAL'
 PUBLIC = 'PUBLIC'
 
